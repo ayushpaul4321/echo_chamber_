@@ -45,6 +45,9 @@ htmlcov/
 *.swp
 *.swo
 
+# Kiro IDE workspace files
+.kiro/
+
 # OS
 .DS_Store
 Thumbs.db
