@@ -1,0 +1,13 @@
+networkx==3.3
+python-louvain==0.16
+scikit-learn==1.5
+fastapi==0.111
+uvicorn==0.30
+hypothesis==6.103
+redis==5.0
+psycopg2-binary==2.9
+pandas==2.2
+sentence-transformers==3.0
+alembic==1.13
+neo4j==5.20
+sqlalchemy==2.0

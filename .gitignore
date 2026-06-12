@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments — never commit these
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+*.env
+
+# Secrets and credentials
+*.pem
+*.key
+*.p12
+secrets.json
+credentials.json
+username_lookup.json
+
+# Test & coverage artifacts
+.pytest_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+*.lcov
+
+# Type checkers & linters
+.mypy_cache/
+.ruff_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files — large datasets not tracked in git
+echo_chamber_detector/*.gz
+echo_chamber_detector/*.tsv
+echo_chamber_detector/*.zip
+echo_chamber_detector/*.tar.gz
+echo_chamber_detector/congress_network/
+data/snapshots/*.graphml
+data/snapshots/*.json
+
+# Alembic — keep versions tracked, but not the compiled cache
+alembic/__pycache__/
+
+# Dashboard node_modules (if added later)
+dashboard/node_modules/
+dashboard/.next/

@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "echo-chamber-detector"
+version = "0.1.0"
+description = "A data pipeline and analysis system for detecting echo chambers in social media interaction graphs."
+requires-python = ">=3.10"
+dependencies = [
+    "networkx==3.3",
+    "python-louvain==0.16",
+    "scikit-learn==1.5",
+    "fastapi==0.111",
+    "uvicorn==0.30",
+    "hypothesis==6.103",
+    "redis==5.0",
+    "psycopg2-binary==2.9",
+    "pandas==2.2",
+    "sentence-transformers==3.0",
+    "alembic==1.13",
+    "neo4j==5.20",
+    "sqlalchemy==2.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long — handled by black formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "ingestion",
+    "graph",
+    "community",
+    "metrics",
+    "recommendations",
+    "api",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+  | data
+  | dashboard
+)/
+'''
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
