@@ -137,6 +137,13 @@ class InteractionGraph:
     """Weighted directed graph where nodes are users and edges represent interactions.
 
     snapshotId and createdAt identify a versioned, persisted graph state.
+
+    rawEdgeCounts is an optional dict mapping (sourceUserId, targetUserId) → raw
+    interaction count (integer for Reddit-style count-aggregated graphs, or float
+    for pre-normalized graphs).  It is populated by GraphConstructionService so
+    that updateGraph can merge incremental records without reverse-normalizing.
+    For pre-normalized datasets (congress, wiki_rfa) it is not needed, but may
+    still be stored for uniformity.
     """
 
     nodes: dict[str, Node]
@@ -144,6 +151,9 @@ class InteractionGraph:
     snapshotId: str
     createdAt: datetime
     datasetSource: str = ""
+    rawEdgeCounts: Optional[dict[tuple[str, str], float]] = field(
+        default=None, repr=False
+    )
 
     @property
     def nodeCount(self) -> int:
@@ -171,6 +181,8 @@ class CommunityPartition:
     intraEdges: int
     interEdges: int
     centroidNode: Optional[str] = None         # Highest-degree node (hub)
+    isApproximate: bool = False                # True if iteration cap was hit
+    girvan_newman_partition: Optional[list[set[str]]] = None  # Secondary validation partition (list of community member sets)
 
 
 @dataclass
@@ -199,6 +211,20 @@ class UserMetrics:
     betweennessCentrality: float
     snapshotId: str
     computedAt: datetime
+
+
+@dataclass
+class SignedMetrics:
+    """Per-community signed-edge sentiment metrics for wiki-RfA graphs."""
+
+    snapshotId: str
+    communityId: str
+    positiveEdgeRatio: float          # [0, 1]
+    negativeEdgeRatio: float          # [0, 1]; = 1 - positiveEdgeRatio
+    netSentimentIndex: float          # mean votePolarity of intra-community edges
+    crossCommunityNegativity: float   # ratio of negative cross-community edges / total negative edges
+    computedAt: datetime
+    datasetSource: str = "wiki_rfa"
 
 
 @dataclass
