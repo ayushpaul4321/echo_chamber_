@@ -890,6 +890,12 @@ class WikiRfAAdapter(DataSourceAdapter):
     DATASET_SOURCE: str = "wiki_rfa"
     WEIGHT: float = 1.0  # binary edge weight
 
+    def __init__(self) -> None:
+        # Built incrementally during fetch(); keyed by SOURCE (voter) userId.
+        # Maps each editor userId to the list of TXT comment strings from their
+        # vote records.  Used downstream by TopicVectorService (Phase 6).
+        self.editor_text_corpus: dict[str, list[str]] = {}
+
     # Prefix constants
     _PFX_SRC = "SRC:"
     _PFX_TGT = "TGT:"
@@ -921,6 +927,9 @@ class WikiRfAAdapter(DataSourceAdapter):
         """
         import gzip
 
+        # Reset corpus on each full fetch so the adapter is reusable.
+        self.editor_text_corpus = {}
+
         records: list[InteractionRecord] = []
         total = 0
         rejected = 0
@@ -944,6 +953,12 @@ class WikiRfAAdapter(DataSourceAdapter):
                         rejected += 1
                     else:
                         records.append(record)
+                        # Accumulate TXT comment text into editor corpus
+                        # (bodyText is the parsed TXT: field value).
+                        if record.bodyText:
+                            self.editor_text_corpus.setdefault(
+                                record.sourceUserId, []
+                            ).append(record.bodyText)
                     current_block = []
             else:
                 current_block.append(stripped)
@@ -956,6 +971,10 @@ class WikiRfAAdapter(DataSourceAdapter):
                 rejected += 1
             else:
                 records.append(record)
+                if record.bodyText:
+                    self.editor_text_corpus.setdefault(
+                        record.sourceUserId, []
+                    ).append(record.bodyText)
 
         if rejected:
             logger.warning(
@@ -966,9 +985,11 @@ class WikiRfAAdapter(DataSourceAdapter):
             )
 
         logger.info(
-            "WikiRfAAdapter: loaded %d valid records from '%s'",
+            "WikiRfAAdapter: loaded %d valid records from '%s'; "
+            "editor_text_corpus covers %d editors",
             len(records),
             config.file_path,
+            len(self.editor_text_corpus),
         )
         return records
 
