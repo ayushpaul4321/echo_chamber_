@@ -214,6 +214,20 @@ class UserMetrics:
 
 
 @dataclass
+class SignedMetrics:
+    """Per-community signed-edge sentiment metrics for wiki-RfA graphs."""
+
+    snapshotId: str
+    communityId: str
+    positiveEdgeRatio: float          # [0, 1]
+    negativeEdgeRatio: float          # [0, 1]; = 1 - positiveEdgeRatio
+    netSentimentIndex: float          # mean votePolarity of intra-community edges
+    crossCommunityNegativity: float   # ratio of negative cross-community edges / total negative edges
+    computedAt: datetime
+    datasetSource: str = "wiki_rfa"
+
+
+@dataclass
 class Recommendation:
     """A cross-community content recommendation for a low-diversity user."""
 
